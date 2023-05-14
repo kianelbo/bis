@@ -1,5 +1,6 @@
-sample_data/
-tmp/
+notebooks/
+tmp*/
+*.pkl
 
 .DS_Store
 

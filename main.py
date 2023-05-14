@@ -1,13 +1,18 @@
+import pickle
+from configparser import ConfigParser
+
 from crawler import Crawler
 from db import DB
 
 
-hostname = "mongodb://localhost:27017/"
-db_name = "egeos_db"
-collection_name = "events"
-
-
 if __name__ == "__main__":
-    db = DB(hostname, db_name, collection_name)
-    crawler = Crawler(db)
-    crawler.run()
+    configs = ConfigParser()
+    configs.read("configs.ini")
+
+    db = DB(**configs["db"])
+    with open(configs["models"]["articles_sieve"], "rb") as clf_file:
+        articles_sieve = pickle.load(clf_file)
+    with open(configs["models"]["vectorizer"], "rb") as cls_file:
+        vectorizer = pickle.load(cls_file)
+    crawler = Crawler(db, articles_sieve, vectorizer)
+    crawler.run(skip_download=True)
