@@ -34,7 +34,7 @@ country_codes = []
 with open("countries.txt", "r") as contries_file:
     country_codes = [line.rstrip() for line in contries_file]
 
-    
+
 class Crawler:
     """
     Used to fetch the data from GDelt.
@@ -60,7 +60,7 @@ class Crawler:
 
     def run(self, skip_download=False):
         """
-        Starts the crawling process and ultimately stores the events in MongoDB.
+        Starts the crawling process and ultimately stores the events in `storage`.
         skip_download: if True it doesn't download the csv files from GDelt.
         """
         if not skip_download:
@@ -137,7 +137,7 @@ class Crawler:
 
     def download_csv_files(self, d):
         """
-        Downloads the csv file. OBV
+        Downloads the csv file.
         d: the date of the csv file to be downloaded.
         """
         until_date = d + timedelta(days=1)
@@ -157,7 +157,7 @@ class Crawler:
 
     def build_df(self, cleanup=False):
         """
-        Creates csv dataframes from csv files.
+        Creates dataframes from csv files.
         cleanup: if True the csv file is removed after the dataframe is created.
         """
         chunks = []
@@ -171,7 +171,7 @@ class Crawler:
 
     def clean_df(self, df):
         """
-        Preprocessing method.
+        Performs some preprocessing steps to the dataset.
         df: dataframe created by 'build_df'.
         """
         cleaned_df = df[df["location"].notna()]
