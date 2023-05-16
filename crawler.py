@@ -1,3 +1,4 @@
+import csv
 import os
 import urllib.request
 from datetime import datetime, timedelta
@@ -30,9 +31,11 @@ events = {
 }
 
 # Used for matching the locations to the countries. 
-country_codes = []
-with open("countries.txt", "r") as contries_file:
-    country_codes = [line.rstrip() for line in contries_file]
+country_codes = {}
+with open("countries.csv", "r") as countries_file:
+    reader = csv.DictReader(countries_file)
+    for row in reader:
+        country_codes[row['Code']] = row['Name']
 
 
 class Crawler:
@@ -46,7 +49,7 @@ class Crawler:
         articles_sieve: the model to filter relevant articles. 
         vectorizer: auxiliary vectorizer model for articles_sieve.
         start_date: start date of crawling data.
-        tmp_dir: temporary folder to store intermidiate files.
+        tmp_dir: temporary folder to store intermediate files.
         """
         self.storage = storage
         self.articles_sieve = articles_sieve
@@ -110,7 +113,11 @@ class Crawler:
             date = date.date().isoformat()
         data = {
             country: {
-                "event_id": f"{event_type}-{country}-{date}", "type": event_type, "country": country, "date": date, "locations": set(), "images": set(),
+                "event_id": f"{event_type}-{country_codes[country]}-{date}",
+                "type": event_type,
+                "country": country_codes[country],
+                "date": date,
+                "locations": set(), "images": set(),
             }
             for country in target_countries
         }
