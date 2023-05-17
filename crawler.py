@@ -10,7 +10,7 @@ from zipfile import ZipFile
 import pandas as pd
 
 
-headers = [
+HEADERS = [
     "GKGRECORDID", "date", "V2SOURCECOLLECTIONIDENTIFIER", "V2SOURCECOMMONNAME", "source_url",
     "V1COUNTS", "V21COUNTS", "tags", "V2ENHANCEDTHEMES", "location", "V2ENHANCEDLOCATIONS",
     "V1PERSONS", "V2ENHANCEDPERSONS", "V1ORGANIZATIONS", "V2ENHANCEDORGANIZATIONS", "V1TONE", "V21ENHANCEDDATES",
@@ -18,7 +18,7 @@ headers = [
     "V21ALLNAMES", "V21AMOUNTS", "V21TRANSLATIONINFO", "V2EXTRASXML",
 ]
 
-events = {
+EVENT_TYPES = {
     "flood": "NATURAL_DISASTER_FLOOD|NATURAL_DISASTER_FLASH_FLOOD",
     "fire": "DISASTER_FIRE|NATURAL_DISASTER_WILDFIRE|NATURAL_DISASTER_FOREST_FIRE|NATURAL_DISASTER_BUSHFIRE|NATURAL_DISASTER_BRUSH_FIRE|NATURAL_DISASTER_GRASS_FIRE",
     "drought": "NATURAL_DISASTER_DROUGHT",
@@ -43,7 +43,7 @@ class Crawler:
     Used to fetch the data from GDelt.
     """
 
-    def __init__(self, storage, articles_sieve, vectorizer, start_date=None, tmp_dir="tmp2"):
+    def __init__(self, storage, articles_sieve, vectorizer, start_date=None, tmp_dir="tmp"):
         """
         storage: any interface that stores the data permanently.
         articles_sieve: the model to filter relevant articles. 
@@ -76,7 +76,7 @@ class Crawler:
         print("Preprocessing dataframe completed")
 
         # only turkey earthquake :(
-        raw_events = df[df["tags"].str.contains(events["earthquake"], na=False)].values.tolist()
+        raw_events = df[df["tags"].str.contains(EVENT_TYPES["earthquake"], na=False)].values.tolist()
         target_countries = self.get_target_countries(raw_events)
         print("Analyzing target locations completed")
 
@@ -90,7 +90,6 @@ class Crawler:
         Selects the countries that are relevant for the disaster and discards all the others.
         It counts the mentions of each country in the corpus and returns the `top_k` countries. 
         """
-        # TODO: top_k should be handled better
         location_freq = {code: 0 for code in country_codes}
         for event in raw_events:
             for loc in event[2].split(';'):
@@ -174,7 +173,7 @@ class Crawler:
             if cleanup:
                 os.remove(filename)
         df = pd.concat(chunks, ignore_index=True)
-        df.columns = headers
+        df.columns = HEADERS
         return df[["date", "tags", "location", "image_url", "source_url"]]
 
     def clean_df(self, df):
