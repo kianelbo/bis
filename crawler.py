@@ -138,7 +138,7 @@ class Crawler:
 
         for c in data:
             data[c]["locations"] = list(data[c]["locations"])
-            data[c]["images"] = [{"date": img[0], "url": img[1]} for img in data[c]["images"]]
+            data[c]["images"] = [{"date": img[0], "image_url": img[1]} for img in data[c]["images"]]
 
         return list(data.values())
 
