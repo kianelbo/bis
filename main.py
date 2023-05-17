@@ -21,4 +21,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         start_date = datetime.strptime(sys.argv[1], "%Y-%m-%d-%H")
     crawler = Crawler(db, articles_sieve, vectorizer, start_date)
-    crawler.run(skip_download=False)
+    crawler.run(skip_download=True)
