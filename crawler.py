@@ -57,7 +57,7 @@ class Crawler:
         if start_date == None:
             self.start_date = datetime(day=6, month=2, year=2023)
         else:
-            self.start_date = self._truncate_dt(start_date) - timedelta(minutes=15)
+            self.start_date = self._truncate_dt(start_date)
         self.tmp_dir = tmp_dir
         Path(self.tmp_dir).mkdir(exist_ok=True)
 
@@ -76,7 +76,7 @@ class Crawler:
         print("Preprocessing dataframe completed")
 
         # only turkey earthquake :(
-        raw_events = df[df["tags"].str.contains("NATURAL_DISASTER_EARTHQUAKE", na=False)].values.tolist()
+        raw_events = df[df["tags"].str.contains(events["earthquake"], na=False)].values.tolist()
         target_countries = self.get_target_countries(raw_events)
         print("Analyzing target locations completed")
 
@@ -99,7 +99,7 @@ class Crawler:
                     location_freq[country_code] += 1
         return [lf[0] for lf in sorted(location_freq.items(), key=lambda i: i[1], reverse=True)][:top_k]
 
-    def extract_events_data(self, raw_events, target_countries, event_type, date):
+    def extract_events_data(self, raw_events, target_countries, event_type, start_time):
         """
         Serializes raw events data into dictionaries.
         It also merges different news that refers to the same event.
@@ -109,14 +109,15 @@ class Crawler:
         event_type: for this project we will consider just 'earthquake'.
         date: date of the event.
         """
-        if not isinstance(date, str):
-            date = date.date().isoformat()
+        start_date = start_time.strftime("%Y-%m-%d %H:%M:%S")
+        end_date = (start_time + timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
         data = {
             country: {
-                "event_id": f"{event_type}-{country_codes[country]}-{date}",
+                "event_id": f"gr2-{country_codes[country]}-{start_date}-{event_type}",
                 "type": event_type,
                 "country": country_codes[country],
-                "date": date,
+                "date": start_date,
+                "timeframe": [start_date , end_date],
                 "locations": set(), "images": set(),
             }
             for country in target_countries
@@ -147,7 +148,7 @@ class Crawler:
         Downloads the csv file.
         d: the date of the csv file to be downloaded.
         """
-        until_date = d + timedelta(days=1)
+        until_date = d + timedelta(hours=12)
         while d < until_date:
             dt_string = d.strftime("%Y%m%d%H%M")
             url = f"http://data.gdeltproject.org/gdeltv2/{dt_string}00.gkg.csv.zip"
@@ -207,4 +208,4 @@ class Crawler:
 
     @staticmethod
     def _gdelt_ts_to_str(ts):
-        return f"{ts[:4]}-{ts[4:6]}-{ts[6:8]} {ts[8:10]}:{ts[10:12]}"
+        return f"{ts[:4]}-{ts[4:6]}-{ts[6:8]} {ts[8:10]}:{ts[10:12]}:{ts[12:14]}"

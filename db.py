@@ -29,5 +29,6 @@ class DB:
             "country": doc["country"],
             "date": doc["date"],
             "locations": doc["locations"],
+            "timeframe": doc["timeframe"],
             "images": doc["images"]
         }
