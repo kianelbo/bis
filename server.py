@@ -6,7 +6,7 @@ from db import DB
 
 
 app = Flask(__name__)
-# app.config['DEBUG'] = False
+app.config['DEBUG'] = False
 app.url_map.strict_slashes = False
 
 configs = ConfigParser()
@@ -29,4 +29,4 @@ def not_found(error):
     return {'error': 'Not Found'}, 404
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=2222)
