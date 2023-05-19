@@ -156,13 +156,13 @@ class Crawler:
                 urllib.request.urlretrieve(url, file_path)
             except HTTPError as err:
                 print(err)
-                continue
+                break
             with ZipFile(file_path, 'r') as zipped_file:
                 zipped_file.extractall(self.tmp_dir)
             os.remove(file_path)
             d += timedelta(minutes=15)
 
-    def build_df(self, cleanup=False):
+    def build_df(self, cleanup=True):
         """
         Creates dataframes from csv files.
         cleanup: if True the csv file is removed after the dataframe is created.
