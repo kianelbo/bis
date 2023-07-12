@@ -1,3 +1,5 @@
+Implementation of a data crawler for G-DELT dataset.
+
 ## Start mongodb:
 ```sh
 docker run --name my-mongo -d -p 27017:27017 mongo
